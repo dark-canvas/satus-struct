@@ -41,4 +41,40 @@ impl Config {
             (*self.raw_data).module_list_addr = module_list_addr;
         }
     }
+
+    pub fn set_framebuffer_info(&mut self, addr: usize, size: u32, width: u16, height: u16, red_mask: u32, green_mask: u32, blue_mask: u32, bytes_per_line: u32) {
+        unsafe {
+            (*self.raw_data).framebuffer_addr = addr;
+            (*self.raw_data).framebuffer_size = size;
+            (*self.raw_data).framebuffer_width = width;
+            (*self.raw_data).framebuffer_height = height;
+            (*self.raw_data).framebuffer_red_mask = red_mask;
+            (*self.raw_data).framebuffer_green_mask = green_mask;
+            (*self.raw_data).framebuffer_blue_mask = blue_mask;
+            (*self.raw_data).framebuffer_bytes_per_line = bytes_per_line;
+        }
+    }
+
+    pub fn set_framebuffer(&mut self, addr: usize, size: u32) {
+        unsafe {
+            (*self.raw_data).framebuffer_addr = addr;
+            (*self.raw_data).framebuffer_size = size;
+        }
+    }
+
+    pub fn set_framebuffer_dimensions(&mut self, width: u16, height: u16, bytes_per_line: u32) {
+        unsafe {
+            (*self.raw_data).framebuffer_width = width;
+            (*self.raw_data).framebuffer_height = height;
+            (*self.raw_data).framebuffer_bytes_per_line = bytes_per_line;
+        }
+    }
+
+    pub fn set_framebuffer_color_masks(&mut self, red_mask: u32, green_mask: u32, blue_mask: u32) {
+        unsafe {
+            (*self.raw_data).framebuffer_red_mask = red_mask;
+            (*self.raw_data).framebuffer_green_mask = green_mask;
+            (*self.raw_data).framebuffer_blue_mask = blue_mask;
+        }
+    }
 }
