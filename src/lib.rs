@@ -3,5 +3,5 @@
 #[cfg(test)]
 extern crate std;
 
-mod config;
-mod module_list;
+pub mod config;
+pub mod module_list;
