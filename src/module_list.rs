@@ -55,8 +55,7 @@ impl ModuleList {
         }
     }
 
-    /* name as bytes?
-    pub fn append(&mut self, name: &CStr16, base_addr: usize, size: usize, entry: usize) -> Result<(), &'static str> {
+    pub fn append(&mut self, name: &[u8], base_addr: usize, size: usize, entry: usize) -> Result<(), &'static str> {
         unsafe {
             let num_modules = (*self.raw_data).header.num_modules as usize;
             if num_modules >= 51 {
@@ -65,9 +64,8 @@ impl ModuleList {
 
             let module_info = &mut (*self.raw_data).modules[num_modules];
             // Copy the name into the module_info, truncating if necessary
-            let name_bytes = name.as_bytes();
-            let copy_len = core::cmp::min(name_bytes.len(), 64);
-            module_info.module_name[..copy_len].copy_from_slice(&name_bytes[..copy_len]);
+            let copy_len = core::cmp::min(name.len(), 64);
+            module_info.module_name[..copy_len].copy_from_slice(&name[..copy_len]);
             module_info.entry = entry;
             module_info.page_start = (base_addr / 4096) as u16; // Assuming 4k pages
             module_info.num_pages = ((size + 4095) / 4096) as u16; // Round up to nearest page
@@ -78,7 +76,6 @@ impl ModuleList {
 
         Ok(())
     }
-        */
 }
 
 #[cfg(test)]
