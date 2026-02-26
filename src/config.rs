@@ -24,12 +24,16 @@ pub struct ConfigPage {
 impl Config {
     pub fn new_from_page(page_ptr: usize) -> Result<Config, &'static str> {
 
-        let config = Config { raw_data: page_ptr as *mut ConfigPage};
+        let config = Config::from_page(page_ptr);
         unsafe {
             // clear the entire page to zero to start with
             core::ptr::write_bytes(config.raw_data as *mut u8, 0, 4096);
         }
         Ok(config)
+    }
+
+    pub fn from_page(page_ptr: usize) -> Self {
+        Config { raw_data: page_ptr as *mut ConfigPage}
     }
 
     pub fn get_page_ptr(&self) -> usize {
