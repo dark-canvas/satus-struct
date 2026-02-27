@@ -81,4 +81,16 @@ impl Config {
             (*self.raw_data).framebuffer_blue_mask = blue_mask;
         }
     }
+
+    pub fn get_framebuffer_address(&self) -> usize {
+        unsafe {
+            (*self.raw_data).framebuffer_addr
+        }
+    }
+
+    pub fn get_framebuffer_size(&self) -> u32 {
+        unsafe {
+            (*self.raw_data).framebuffer_size
+        }
+    }
 }
