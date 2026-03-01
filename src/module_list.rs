@@ -15,7 +15,7 @@ struct ModuuleListHeader {
 // enough for bood-loader-loaded modules (other modules can be loaded 
 // later, utilizing these other modules as needed)
 #[repr(C)]
-struct ModuleInfo {
+pub struct ModuleInfo {
     module_name: [u8; 64], // Assuming max module name length of 64 bytes
     entry: usize,
     page_start: u16, // 64k * 4k == 256mb worth of boot-loaded modules
