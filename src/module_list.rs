@@ -23,6 +23,16 @@ struct ModuleInfo {
     other: u32,
 }
 
+impl ModuleInfo {
+    pub fn get_start_address(&self) -> usize {
+        self.page_start as usize * 4096
+    }
+
+    pub fn get_size(&self) -> usize {
+        self.num_pages as usize * 4096
+    }
+}
+
 // List of modules loaded, occupies a full page.  This page will be 
 // passed to the kernel via a register (rax?)
 #[repr(C)]
