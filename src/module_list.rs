@@ -91,7 +91,7 @@ impl ModuleList {
         Ok(())
     }
 
-    pub fn get_module_info(&self, index: usize) -> Option<*const ModuleInfo> {
+    pub fn get_module_info(&self, index: usize) -> Option<&ModuleInfo> {
         unsafe {
             let num_modules = (*self.raw_data).header.num_modules as usize;
             if index >= num_modules {
