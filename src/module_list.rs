@@ -38,11 +38,15 @@ pub struct ModuleList {
 impl ModuleList {
     pub fn new_from_page(page_ptr: usize) -> Result<ModuleList, &'static str> {
 
-        let list = ModuleList { raw_data: page_ptr as *mut ModuleListPage};
+        let list = Self::from_page(page_ptr);
         unsafe {
             (*list.raw_data).header.num_modules = 0;
         }
         Ok(list)
+    }
+
+    pub fn from_page(page_ptr: usize) -> Self {
+        ModuleList { raw_data: page_ptr as *mut ModuleListPage}
     }
 
     pub fn get_page_ptr(&self) -> usize {
