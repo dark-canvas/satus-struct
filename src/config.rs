@@ -46,6 +46,12 @@ impl Config {
         }
     }
 
+    pub fn get_module_list_address(&self) -> usize {
+        unsafe {
+            (*self.raw_data).module_list_addr
+        }
+    }
+
     pub fn set_framebuffer_info(&mut self, addr: usize, size: u32, width: u16, height: u16, red_mask: u32, green_mask: u32, blue_mask: u32, bytes_per_line: u32) {
         unsafe {
             (*self.raw_data).framebuffer_addr = addr;
