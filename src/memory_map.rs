@@ -1,7 +1,7 @@
 use crate::types::Address;
 
 #[repr(u8)]
-#[derive(PartialEq, Copy)]
+#[derive(PartialEq, Copy, Clone)]
 pub enum MemoryRegionType {
     Available,
     Allocated,
