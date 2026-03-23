@@ -1,12 +1,15 @@
 use crate::types::Address;
 
 #[repr(u8)]
+#[derive(PartialEq)]
 pub enum MemoryRegionType {
     Available,
     Allocated,
     Reserved,
     NonExistent,
 }
+
+
 
 #[repr(C)]
 pub struct MemoryRegion {
