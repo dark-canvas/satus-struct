@@ -1,11 +1,11 @@
 use crate::types::Address;
 
 #[repr(u8)]
-enum MemoryRegionType {
-    MemoryRegionAvailable,
-    MemoryRegionAllocated,
-    MemoryRegionReserved,
-    MemoryRegionNonExistent,
+pub enum MemoryRegionType {
+    Available,
+    Allocated,
+    Reserved,
+    NonExistent,
 }
 
 #[repr(C)]
