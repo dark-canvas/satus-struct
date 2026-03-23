@@ -1,4 +1,3 @@
-
 // TODO: need a nice way to share these with the x86_64 based kernel, without pulling in all the 
 // UEFI stuff (shared crate containing only data structs?)
 pub struct Config {
@@ -19,6 +18,9 @@ pub struct ConfigPage {
     // I don't understand why UEFI doesn't have a bytes_per_pixel!?
 
     pub module_list_addr: usize,
+
+    pub total_pages: u64,
+    pub memory_map_addr: usize,
 }
 
 impl Config {
@@ -99,4 +101,5 @@ impl Config {
             (*self.raw_data).framebuffer_size
         }
     }
+
 }
