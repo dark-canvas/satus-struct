@@ -1,3 +1,4 @@
+use crate::types::Address;
 
 const MAX_MODULES: usize = 51; // To fit in a 4096 byte page
 
@@ -24,8 +25,8 @@ pub struct ModuleInfo {
 }
 
 impl ModuleInfo {
-    pub fn get_start_address(&self) -> usize {
-        self.page_start as usize * 4096
+    pub fn get_start_address(&self) -> Address {
+        self.page_start as Address * 4096
     }
 
     pub fn get_size(&self) -> usize {
@@ -46,7 +47,7 @@ pub struct ModuleList {
 }
 
 impl ModuleList {
-    pub fn new_from_page(page_ptr: usize) -> Result<ModuleList, &'static str> {
+    pub fn new_from_page(page_ptr: Address) -> Result<ModuleList, &'static str> {
 
         let list = Self::from_page(page_ptr);
         unsafe {
@@ -55,12 +56,12 @@ impl ModuleList {
         Ok(list)
     }
 
-    pub fn from_page(page_ptr: usize) -> Self {
+    pub fn from_page(page_ptr: Address) -> Self {
         ModuleList { raw_data: page_ptr as *mut ModuleListPage}
     }
 
-    pub fn get_page_ptr(&self) -> usize {
-        self.raw_data as usize
+    pub fn get_page_ptr(&self) -> Address {
+        self.raw_data as Address
     }
 
     pub fn get_num_modules(&self) -> usize {
@@ -69,7 +70,7 @@ impl ModuleList {
         }
     }
 
-    pub fn append(&mut self, name: &[u8], base_addr: usize, size: usize, entry: usize) -> Result<(), &'static str> {
+    pub fn append(&mut self, name: &[u8], base_addr: Address, size: usize, entry: usize) -> Result<(), &'static str> {
         unsafe {
             let num_modules = (*self.raw_data).header.num_modules as usize;
             if num_modules >= 51 {

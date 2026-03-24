@@ -1,3 +1,5 @@
+use crate::types::Address;
+
 // TODO: need a nice way to share these with the x86_64 based kernel, without pulling in all the 
 // UEFI stuff (shared crate containing only data structs?)
 pub struct Config {
@@ -7,7 +9,7 @@ pub struct Config {
 
 #[repr(C)]
 pub struct ConfigPage {
-    pub framebuffer_addr: usize,
+    pub framebuffer_addr: Address,
     pub framebuffer_size: u32,
     pub framebuffer_width: u16,
     pub framebuffer_height: u16,
@@ -17,14 +19,14 @@ pub struct ConfigPage {
     pub framebuffer_bytes_per_line: u32,
     // I don't understand why UEFI doesn't have a bytes_per_pixel!?
 
-    pub module_list_addr: usize,
+    pub module_list_addr: Address,
 
     pub total_pages: u64,
-    pub memory_map_addr: usize,
+    pub memory_map_addr: Address,
 }
 
 impl Config {
-    pub fn new_from_page(page_ptr: usize) -> Result<Config, &'static str> {
+    pub fn new_from_page(page_ptr: Address) -> Result<Config, &'static str> {
 
         let config = Config::from_page(page_ptr);
         unsafe {
@@ -34,27 +36,34 @@ impl Config {
         Ok(config)
     }
 
-    pub fn from_page(page_ptr: usize) -> Self {
+    pub fn from_page(page_ptr: Address) -> Self {
         Config { raw_data: page_ptr as *mut ConfigPage}
     }
 
-    pub fn get_page_ptr(&self) -> usize {
-        self.raw_data as usize
+    pub fn get_page_ptr(&self) -> Address {
+        self.raw_data as Address
     }
 
-    pub fn set_module_list(&mut self, module_list_addr: usize) {
+    pub fn set_module_list(&mut self, module_list_addr: Address) {
         unsafe {
             (*self.raw_data).module_list_addr = module_list_addr;
         }
     }
 
-    pub fn get_module_list_address(&self) -> usize {
+    pub fn set_memory_map(&mut self, memory_map_addr: Address) {
+        unsafe {
+            (*self.raw_data).memory_map_addr = memory_map_addr;
+        }
+    }
+
+
+    pub fn get_module_list_address(&self) -> Address {
         unsafe {
             (*self.raw_data).module_list_addr
         }
     }
 
-    pub fn set_framebuffer_info(&mut self, addr: usize, size: u32, width: u16, height: u16, red_mask: u32, green_mask: u32, blue_mask: u32, bytes_per_line: u32) {
+    pub fn set_framebuffer_info(&mut self, addr: Address, size: u32, width: u16, height: u16, red_mask: u32, green_mask: u32, blue_mask: u32, bytes_per_line: u32) {
         unsafe {
             (*self.raw_data).framebuffer_addr = addr;
             (*self.raw_data).framebuffer_size = size;
@@ -67,7 +76,7 @@ impl Config {
         }
     }
 
-    pub fn set_framebuffer(&mut self, addr: usize, size: u32) {
+    pub fn set_framebuffer(&mut self, addr: Address, size: u32) {
         unsafe {
             (*self.raw_data).framebuffer_addr = addr;
             (*self.raw_data).framebuffer_size = size;
@@ -90,7 +99,7 @@ impl Config {
         }
     }
 
-    pub fn get_framebuffer_address(&self) -> usize {
+    pub fn get_framebuffer_address(&self) -> Address {
         unsafe {
             (*self.raw_data).framebuffer_addr
         }

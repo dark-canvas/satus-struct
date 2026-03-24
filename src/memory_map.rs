@@ -9,8 +9,6 @@ pub enum MemoryRegionType {
     NonExistent,
 }
 
-
-
 #[repr(C)]
 pub struct MemoryRegion {
     memory_type: u8,
@@ -20,7 +18,7 @@ pub struct MemoryRegion {
 
 #[repr(C)]
 pub struct MemoryMapPage {
-    next_memory_map_addr: u64,
+    next_memory_map_addr: Address,
     total_pages: usize,
     regions: [MemoryRegion; 340],
 }
@@ -31,7 +29,7 @@ pub struct MemoryMap {
 
 
 impl MemoryMap {
-    pub fn new_from_page(page_ptr: usize) -> Result<MemoryMap, &'static str> {
+    pub fn new_from_page(page_ptr: Address) -> Result<MemoryMap, &'static str> {
 
         let list = Self::from_page(page_ptr);
         unsafe {
@@ -41,8 +39,12 @@ impl MemoryMap {
         Ok(list)
     }
 
-    pub fn from_page(page_ptr: usize) -> Self {
+    pub fn from_page(page_ptr: Address) -> Self {
         MemoryMap { raw_data: page_ptr as *mut MemoryMapPage}
+    }
+
+    pub fn get_page_ptr(&self) -> Address {
+        self.raw_data as Address
     }
 
     pub fn add_region(&mut self, memory_type: MemoryRegionType, start: Address, end: Address) {
