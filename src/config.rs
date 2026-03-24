@@ -56,11 +56,16 @@ impl Config {
         }
     }
 
-
     pub fn get_module_list_address(&self) -> Address {
         unsafe {
             (*self.raw_data).module_list_addr
         }
+    }
+
+    pub fn get_memory_map_address(&self) -> Address {
+        unsafe {
+            (*self.raw_data).memory_map_addr
+        }      
     }
 
     pub fn set_framebuffer_info(&mut self, addr: Address, size: u32, width: u16, height: u16, red_mask: u32, green_mask: u32, blue_mask: u32, bytes_per_line: u32) {
