@@ -1,12 +1,13 @@
 use crate::types::Address;
 
-const MAX_MODULES: usize = 51; // To fit in a 4096 byte page
+const MAX_MODULES: usize = 46; // To fit in a 4096 byte page
 
 // 16 bytes of header
 #[repr(C)]
 struct ModuuleListHeader {
+    version: u16,
     num_modules: u16,
-    reserved: [u8; 14], // Padding to make the header 16 bytes
+    reserved: [u8; 44], // Padding 
 
 }
 // Create an array of these that ends up being 4096 bytes (a page)
@@ -19,18 +20,17 @@ struct ModuuleListHeader {
 pub struct ModuleInfo {
     module_name: [u8; 64], // Assuming max module name length of 64 bytes
     entry: usize,
-    page_start: u16, // 64k * 4k == 256mb worth of boot-loaded modules
-    num_pages: u16,  // may or may not enough but there's room for expansion
-    other: u32,
+    start: Address,
+    size: usize,
 }
 
 impl ModuleInfo {
     pub fn get_start_address(&self) -> Address {
-        self.page_start as Address * 4096
+        self.start
     }
 
     pub fn get_size(&self) -> usize {
-        self.num_pages as usize * 4096
+        self.size
     }
 }
 
@@ -51,6 +51,7 @@ impl ModuleList {
 
         let list = Self::from_page(page_ptr);
         unsafe {
+            (*list.raw_data).header.version = 1;
             (*list.raw_data).header.num_modules = 0;
         }
         Ok(list)
@@ -82,9 +83,8 @@ impl ModuleList {
             let copy_len = core::cmp::min(name.len(), 64);
             module_info.module_name[..copy_len].copy_from_slice(&name[..copy_len]);
             module_info.entry = entry;
-            module_info.page_start = (base_addr / 4096) as u16; // Assuming 4k pages
-            module_info.num_pages = ((size + 4095) / 4096) as u16; // Round up to nearest page
-            module_info.other = 0; // Reserved for future use
+            module_info.start = base_addr;
+            module_info.size = size;
 
             (*self.raw_data).header.num_modules += 1;
         }
@@ -109,8 +109,8 @@ mod tests {
 
     #[test]
     fn test_size() {
-        assert_eq!(std::mem::size_of::<ModuuleListHeader>(), 16);
-        assert_eq!(std::mem::size_of::<ModuleInfo>(), 80);
+        assert_eq!(std::mem::size_of::<ModuuleListHeader>(), 48);
+        assert_eq!(std::mem::size_of::<ModuleInfo>(), 88);
         assert_eq!(std::mem::size_of::<ModuleListPage>(), 4096);
     }
 }
