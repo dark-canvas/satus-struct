@@ -74,7 +74,7 @@ impl ModuleList {
     pub fn append(&mut self, name: &[u8], base_addr: Address, size: usize, entry: usize) -> Result<(), &'static str> {
         unsafe {
             let num_modules = (*self.raw_data).header.num_modules as usize;
-            if num_modules >= 51 {
+            if num_modules >= MAX_MODULES {
                 return Err("Module list is full");
             }
 

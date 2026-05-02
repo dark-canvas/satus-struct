@@ -116,4 +116,15 @@ impl Config {
         }
     }
 
+    pub fn get_framebuffer_dimensions(&self) -> (u16, u16) {
+        unsafe {
+            ((*self.raw_data).framebuffer_width, (*self.raw_data).framebuffer_height)
+        }
+    }
+
+    pub fn get_framebuffer_bytes_per_line(&self) -> u32 {
+        unsafe {
+            (*self.raw_data).framebuffer_bytes_per_line
+        }
+    }
 }
