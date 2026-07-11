@@ -1,7 +1,7 @@
 use crate::config_page::ConfigPage;
 use crate::types::Address;
 
-type Config = ConfigPage<BasicConfig>;
+pub type Config = ConfigPage<BasicConfig>;
 
 #[repr(C)]
 pub struct BasicConfig {
