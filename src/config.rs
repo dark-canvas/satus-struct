@@ -1,14 +1,10 @@
+use crate::config_page::ConfigPage;
 use crate::types::Address;
 
-// TODO: need a nice way to share these with the x86_64 based kernel, without pulling in all the 
-// UEFI stuff (shared crate containing only data structs?)
-pub struct Config {
-    // hide the un-safe-ness
-    raw_data: *mut ConfigPage,
-}
+type Config = ConfigPage<BasicConfig>;
 
 #[repr(C)]
-pub struct ConfigPage {
+pub struct BasicConfig {
     pub framebuffer_addr: Address,
     pub framebuffer_size: u32,
     pub framebuffer_width: u16,
@@ -26,105 +22,64 @@ pub struct ConfigPage {
 }
 
 impl Config {
-    pub fn new_from_page(page_ptr: Address) -> Result<Config, &'static str> {
-
-        let config = Config::from_page(page_ptr);
-        unsafe {
-            // clear the entire page to zero to start with
-            core::ptr::write_bytes(config.raw_data as *mut u8, 0, 4096);
-        }
-        Ok(config)
-    }
-
-    pub fn from_page(page_ptr: Address) -> Self {
-        Config { raw_data: page_ptr as *mut ConfigPage}
-    }
-
-    pub fn get_page_ptr(&self) -> Address {
-        self.raw_data as Address
-    }
 
     pub fn set_module_list(&mut self, module_list_addr: Address) {
-        unsafe {
-            (*self.raw_data).module_list_addr = module_list_addr;
-        }
+        self.module_list_addr = module_list_addr;
     }
 
     pub fn set_memory_map(&mut self, memory_map_addr: Address) {
-        unsafe {
-            (*self.raw_data).memory_map_addr = memory_map_addr;
-        }
+        self.memory_map_addr = memory_map_addr;
     }
 
     pub fn get_module_list_address(&self) -> Address {
-        unsafe {
-            (*self.raw_data).module_list_addr
-        }
+        self.module_list_addr
     }
 
     pub fn get_memory_map_address(&self) -> Address {
-        unsafe {
-            (*self.raw_data).memory_map_addr
-        }      
+        self.memory_map_addr
     }
 
     pub fn set_framebuffer_info(&mut self, addr: Address, size: u32, width: u16, height: u16, red_mask: u32, green_mask: u32, blue_mask: u32, bytes_per_line: u32) {
-        unsafe {
-            (*self.raw_data).framebuffer_addr = addr;
-            (*self.raw_data).framebuffer_size = size;
-            (*self.raw_data).framebuffer_width = width;
-            (*self.raw_data).framebuffer_height = height;
-            (*self.raw_data).framebuffer_red_mask = red_mask;
-            (*self.raw_data).framebuffer_green_mask = green_mask;
-            (*self.raw_data).framebuffer_blue_mask = blue_mask;
-            (*self.raw_data).framebuffer_bytes_per_line = bytes_per_line;
-        }
+        self.framebuffer_addr = addr;
+        self.framebuffer_size = size;
+        self.framebuffer_width = width;
+        self.framebuffer_height = height;
+        self.framebuffer_red_mask = red_mask;
+        self.framebuffer_green_mask = green_mask;
+        self.framebuffer_blue_mask = blue_mask;
+        self.framebuffer_bytes_per_line = bytes_per_line;
     }
 
     pub fn set_framebuffer(&mut self, addr: Address, size: u32) {
-        unsafe {
-            (*self.raw_data).framebuffer_addr = addr;
-            (*self.raw_data).framebuffer_size = size;
-        }
+        self.framebuffer_addr = addr;
+        self.framebuffer_size = size;
     }
 
     pub fn set_framebuffer_dimensions(&mut self, width: u16, height: u16, bytes_per_line: u32) {
-        unsafe {
-            (*self.raw_data).framebuffer_width = width;
-            (*self.raw_data).framebuffer_height = height;
-            (*self.raw_data).framebuffer_bytes_per_line = bytes_per_line;
-        }
+        self.framebuffer_width = width;
+        self.framebuffer_height = height;
+        self.framebuffer_bytes_per_line = bytes_per_line;
     }
 
     pub fn set_framebuffer_color_masks(&mut self, red_mask: u32, green_mask: u32, blue_mask: u32) {
-        unsafe {
-            (*self.raw_data).framebuffer_red_mask = red_mask;
-            (*self.raw_data).framebuffer_green_mask = green_mask;
-            (*self.raw_data).framebuffer_blue_mask = blue_mask;
-        }
+        self.framebuffer_red_mask = red_mask;
+        self.framebuffer_green_mask = green_mask;
+        self.framebuffer_blue_mask = blue_mask;
     }
 
     pub fn get_framebuffer_address(&self) -> Address {
-        unsafe {
-            (*self.raw_data).framebuffer_addr
-        }
+        self.framebuffer_addr
     }
 
     pub fn get_framebuffer_size(&self) -> u32 {
-        unsafe {
-            (*self.raw_data).framebuffer_size
-        }
+        self.framebuffer_size
     }
 
     pub fn get_framebuffer_dimensions(&self) -> (u16, u16) {
-        unsafe {
-            ((*self.raw_data).framebuffer_width, (*self.raw_data).framebuffer_height)
-        }
+        (self.framebuffer_width, self.framebuffer_height)
     }
 
     pub fn get_framebuffer_bytes_per_line(&self) -> u32 {
-        unsafe {
-            (*self.raw_data).framebuffer_bytes_per_line
-        }
+        self.framebuffer_bytes_per_line
     }
 }
