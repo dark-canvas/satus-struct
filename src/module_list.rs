@@ -3,7 +3,7 @@ use crate::types::Address;
 
 const MAX_MODULES: usize = 46; // To fit in a 4096 byte page
 
-type ModuleList = ConfigPage<ModuleListConfig>;
+pub type ModuleList = ConfigPage<ModuleListConfig>;
 
 // 16 bytes of header
 #[repr(C)]

@@ -1,7 +1,7 @@
 use crate::config_page::ConfigPage;
 use crate::types::Address;
 
-type MemoryMap = ConfigPage<MemoryMaps>;
+pub type MemoryMap = ConfigPage<MemoryMaps>;
 
 #[repr(u8)]
 #[derive(PartialEq, Copy, Clone)]
