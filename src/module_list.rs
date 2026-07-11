@@ -1,6 +1,9 @@
+use crate::config_page::ConfigPage;
 use crate::types::Address;
 
 const MAX_MODULES: usize = 46; // To fit in a 4096 byte page
+
+type ModuleList = ConfigPage<ModuleListConfig>;
 
 // 16 bytes of header
 #[repr(C)]
@@ -37,69 +40,42 @@ impl ModuleInfo {
 // List of modules loaded, occupies a full page.  This page will be 
 // passed to the kernel via a register (rax?)
 #[repr(C)]
-struct ModuleListPage {
+struct ModuleListConfig {
     header: ModuuleListHeader,
     modules: [ModuleInfo; MAX_MODULES], // If not enough we can link pages somewhow
 }
 
-pub struct ModuleList {
-    raw_data: *mut ModuleListPage,
-}
-
 impl ModuleList {
-    pub fn new_from_page(page_ptr: Address) -> Result<ModuleList, &'static str> {
-
-        let list = Self::from_page(page_ptr);
-        unsafe {
-            (*list.raw_data).header.version = 1;
-            (*list.raw_data).header.num_modules = 0;
-        }
-        Ok(list)
-    }
-
-    pub fn from_page(page_ptr: Address) -> Self {
-        ModuleList { raw_data: page_ptr as *mut ModuleListPage}
-    }
-
-    pub fn get_page_ptr(&self) -> Address {
-        self.raw_data as Address
-    }
 
     pub fn get_num_modules(&self) -> usize {
-        unsafe {
-            (*self.raw_data).header.num_modules as usize
-        }
+        self.header.num_modules as usize
     }
 
     pub fn append(&mut self, name: &[u8], base_addr: Address, size: usize, entry: usize) -> Result<(), &'static str> {
-        unsafe {
-            let num_modules = (*self.raw_data).header.num_modules as usize;
-            if num_modules >= MAX_MODULES {
-                return Err("Module list is full");
-            }
-
-            let module_info = &mut (*self.raw_data).modules[num_modules];
-            // Copy the name into the module_info, truncating if necessary
-            let copy_len = core::cmp::min(name.len(), 64);
-            module_info.module_name[..copy_len].copy_from_slice(&name[..copy_len]);
-            module_info.entry = entry;
-            module_info.start = base_addr;
-            module_info.size = size;
-
-            (*self.raw_data).header.num_modules += 1;
+        let num_modules = self.header.num_modules as usize;
+        if num_modules >= MAX_MODULES {
+            return Err("Module list is full");
         }
+
+        let module_info = &mut self.modules[num_modules];
+        // Copy the name into the module_info, truncating if necessary
+        let copy_len = core::cmp::min(name.len(), 64);
+        module_info.module_name[..copy_len].copy_from_slice(&name[..copy_len]);
+        module_info.entry = entry;
+        module_info.start = base_addr;
+        module_info.size = size;
+
+        self.header.num_modules += 1;
 
         Ok(())
     }
 
     pub fn get_module_info(&self, index: usize) -> Option<&ModuleInfo> {
-        unsafe {
-            let num_modules = (*self.raw_data).header.num_modules as usize;
-            if index >= num_modules {
-                return None;
-            }
-            Some(&(*self.raw_data).modules[index])
+        let num_modules = self.header.num_modules as usize;
+        if index >= num_modules {
+            return None;
         }
+        Some(&self.modules[index])
     }
 }
 
@@ -111,6 +87,6 @@ mod tests {
     fn test_size() {
         assert_eq!(std::mem::size_of::<ModuuleListHeader>(), 48);
         assert_eq!(std::mem::size_of::<ModuleInfo>(), 88);
-        assert_eq!(std::mem::size_of::<ModuleListPage>(), 4096);
+        assert_eq!(std::mem::size_of::<ModuleListConfig>(), 4096);
     }
 }
