@@ -7,7 +7,7 @@ pub type ModuleList = ConfigPage<ModuleListConfig>;
 
 // 16 bytes of header
 #[repr(C)]
-struct ModuuleListHeader {
+pub struct ModuuleListHeader {
     version: u16,
     num_modules: u16,
     reserved: [u8; 44], // Padding 
@@ -40,7 +40,7 @@ impl ModuleInfo {
 // List of modules loaded, occupies a full page.  This page will be 
 // passed to the kernel via a register (rax?)
 #[repr(C)]
-struct ModuleListConfig {
+pub struct ModuleListConfig {
     header: ModuuleListHeader,
     modules: [ModuleInfo; MAX_MODULES], // If not enough we can link pages somewhow
 }

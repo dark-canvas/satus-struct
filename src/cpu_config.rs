@@ -15,7 +15,7 @@ pub type CpuConfig = ConfigPage<CpuConfigDetails>;
  */
 
 #[repr(C)]
-struct CpuConfigDetails {
+pub struct CpuConfigDetails {
     pub num_cpus: u32,
     pub kernel_ap_entry: u64, // or a function pointer?  fn(u32) -> ! 
     pub ap_ready: AtomicBool,
