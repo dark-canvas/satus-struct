@@ -1,4 +1,4 @@
-use crate::config_page::ConfigPage;
+use crate::config_page::{ConfigPage, ConfigConstructor};
 use crate::types::Address;
 
 const MAX_MODULES: usize = 46; // To fit in a 4096 byte page
@@ -44,6 +44,9 @@ pub struct ModuleListConfig {
     header: ModuuleListHeader,
     modules: [ModuleInfo; MAX_MODULES], // If not enough we can link pages somewhow
 }
+
+impl ConfigConstructor for ModuleListConfig {}
+
 
 impl ModuleList {
 

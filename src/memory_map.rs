@@ -1,4 +1,4 @@
-use crate::config_page::ConfigPage;
+use crate::config_page::{ConfigPage, ConfigConstructor};
 use crate::types::Address;
 
 pub type MemoryMap = ConfigPage<MemoryMaps>;
@@ -25,6 +25,8 @@ pub struct MemoryMaps {
     num_regions: usize,
     regions: [MemoryRegion; 340],
 }
+
+impl ConfigConstructor for MemoryMaps {}
 
 impl MemoryRegion {
     pub fn get_type(&self) -> MemoryRegionType {

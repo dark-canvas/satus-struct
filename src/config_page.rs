@@ -3,15 +3,20 @@ use core::ops::DerefMut;
 
 use crate::types::Address;
 
+pub trait ConfigConstructor {
+    fn construct(config: &mut Self) {
+    }
+}
+
 /// A struct that acts like the underlying struct T, but is constructed using 
 /// a pointer to a page, such that the data can be easily shared between the 
 /// bootloader and kernel (or between different address spaces).
-pub struct ConfigPage<T> {
+pub struct ConfigPage<T: ConfigConstructor > {
     // hide the un-safe-ness
     pub(crate) raw_data: *mut T,
 }
 
-impl<T> ConfigPage<T> {
+impl<T: ConfigConstructor> ConfigPage<T> {
     const _T_LESS_THAN_PAGE: () = {
         if size_of::<T>() <= 4096 {
             panic!("Target struct for ConfigPage must fit into a single page!");
@@ -24,6 +29,7 @@ impl<T> ConfigPage<T> {
         unsafe {
             // clear the entire page to zero to start with
             core::ptr::write_bytes(config.raw_data as *mut u8, 0, 4096);
+            T::construct(&mut *config.raw_data);
         }
         Ok(config)
     }
@@ -43,7 +49,7 @@ impl<T> ConfigPage<T> {
 }
 
 /// This deref trait hides the hidden/unsafe pointer that's contained in the ConfigPage
-impl<T> Deref for ConfigPage<T> {
+impl<T: ConfigConstructor> Deref for ConfigPage<T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -53,7 +59,7 @@ impl<T> Deref for ConfigPage<T> {
     }
 }
 
-impl<T> DerefMut for ConfigPage<T> {
+impl<T: ConfigConstructor> DerefMut for ConfigPage<T> {
     fn deref_mut(&mut self) -> &mut T {
         unsafe {
             &mut (*self.raw_data)
