@@ -1,4 +1,4 @@
-use crate::config_page::ConfigPage;
+use crate::config_page::{ConfigPage, ConfigConstructor};
 use crate::types::Address;
 use crate::cpu_config::CpuConfig;
 use crate::memory_map::MemoryMap;
@@ -6,8 +6,11 @@ use crate::module_list::ModuleList;
 
 pub type Config = ConfigPage<BasicConfig>;
 
+const CONFIG_VERSION: u32 = 1;
+
 #[repr(C)]
 pub struct BasicConfig {
+    pub version: u32, // definitely doesn't *need* to be a u32
     pub framebuffer_addr: Address,
     pub framebuffer_size: u32,
     pub framebuffer_width: u16,
@@ -28,7 +31,23 @@ pub struct BasicConfig {
     pub module_list_addr: Address,
 }
 
+impl ConfigConstructor for BasicConfig {
+    fn construct(config: &mut BasicConfig) {
+        config.version = CONFIG_VERSION;
+    }
+}
+
 impl Config {
+
+    // returns the version of config which this API supprts
+    pub fn get_supported_version() -> u32 {
+        CONFIG_VERSION
+    }
+
+    // returns the version embedded in the configuration itself
+    pub fn get_version(&self) -> u32 {
+        self.version
+    }
 
     pub fn set_cpu_config(&mut self, config: &CpuConfig) {
         self.cpu_config_addr = config.get_page_ptr();

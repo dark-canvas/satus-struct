@@ -1,4 +1,4 @@
-use crate::config_page::ConfigPage;
+use crate::config_page::{ConfigPage, ConfigConstructor};
 
 use core::sync::atomic::AtomicBool;
 
@@ -20,6 +20,8 @@ pub struct CpuConfigDetails {
     pub kernel_ap_entry: u64, // or a function pointer?  fn(u32) -> ! 
     pub ap_ready: AtomicBool,
 }
+
+impl ConfigConstructor for CpuConfigDetails {}
 
 impl CpuConfig {
     pub fn get_num_cpus(&self) -> u32 {
