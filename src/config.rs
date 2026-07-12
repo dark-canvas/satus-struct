@@ -1,5 +1,8 @@
 use crate::config_page::ConfigPage;
 use crate::types::Address;
+use crate::cpu_config::CpuConfig;
+use crate::memory_map::MemoryMap;
+use crate::module_list::ModuleList;
 
 pub type Config = ConfigPage<BasicConfig>;
 
@@ -15,20 +18,44 @@ pub struct BasicConfig {
     pub framebuffer_bytes_per_line: u32,
     // I don't understand why UEFI doesn't have a bytes_per_pixel!?
 
-    pub module_list_addr: Address,
+    pub cpu_config_addr: Address,
 
+    /// Total number of memory pages in the system
     pub total_pages: u64,
     pub memory_map_addr: Address,
+
+    /// The list of modules loaded into memory by the bootloader
+    pub module_list_addr: Address,
 }
 
 impl Config {
 
-    pub fn set_module_list(&mut self, module_list_addr: Address) {
-        self.module_list_addr = module_list_addr;
+    pub fn set_cpu_config(&mut self, config: &CpuConfig) {
+        self.cpu_config_addr = config.get_page_ptr();
     }
 
-    pub fn set_memory_map(&mut self, memory_map_addr: Address) {
-        self.memory_map_addr = memory_map_addr;
+    pub fn set_module_list(&mut self, module_list: &ModuleList) {
+        self.module_list_addr = module_list.get_page_ptr();
+    }
+
+    pub fn set_memory_map(&mut self, memory_map: &MemoryMap) {
+        self.memory_map_addr = memory_map.get_page_ptr();
+    }
+
+    pub fn get_cpu_config(&self) -> CpuConfig {
+        CpuConfig::from_page(self.cpu_config_addr)
+    }
+
+    pub fn get_memory_map(&self) -> MemoryMap {
+        MemoryMap::from_page(self.memory_map_addr)
+    }
+
+    pub fn get_module_list(&self) -> ModuleList {
+        ModuleList::from_page(self.module_list_addr)
+    }
+
+    pub fn get_cpu_config_address(&self) -> Address {
+        self.cpu_config_addr
     }
 
     pub fn get_module_list_address(&self) -> Address {

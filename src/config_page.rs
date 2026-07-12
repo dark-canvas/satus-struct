@@ -36,6 +36,10 @@ impl<T> ConfigPage<T> {
     pub fn get_page_ptr(&self) -> Address {
         self.raw_data as Address
     }
+
+    pub fn set_page_ptr(&mut self, addr: Address) {
+        self.raw_data = addr as *mut T 
+    }
 }
 
 /// This deref trait hides the hidden/unsafe pointer that's contained in the ConfigPage
