@@ -54,6 +54,18 @@ impl Config {
         ModuleList::from_page(self.module_list_addr)
     }
 
+    pub fn set_cpu_config_address(&mut self, addr: Address) {
+        self.cpu_config_addr = addr;
+    }
+
+    pub fn set_module_list_address(&mut self, addr: Address) {
+        self.module_list_addr = addr;
+    }
+
+    pub fn set_memory_map_address(&mut self, addr: Address) {
+        self.memory_map_addr = addr;
+    }
+
     pub fn get_cpu_config_address(&self) -> Address {
         self.cpu_config_addr
     }
