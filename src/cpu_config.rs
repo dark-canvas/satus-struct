@@ -1,6 +1,6 @@
 use crate::config_page::{ConfigPage, ConfigConstructor};
 
-use core::sync::atomic::AtomicBool;
+use core::sync::atomic::{AtomicBool, AtomicU32};
 
 pub type CpuConfig = ConfigPage<CpuConfigDetails>;
 
@@ -17,6 +17,7 @@ pub type CpuConfig = ConfigPage<CpuConfigDetails>;
 #[repr(C)]
 pub struct CpuConfigDetails {
     pub num_cpus: u32,
+    pub active_cpus: AtomicU32,
     pub kernel_ap_entry: u64, // or a function pointer?  fn(u32) -> ! 
     pub ap_ready: AtomicBool,
     pub ap_started: AtomicBool,
