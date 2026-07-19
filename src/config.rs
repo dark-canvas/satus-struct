@@ -6,7 +6,7 @@ use crate::module_list::ModuleList;
 
 pub type Config = ConfigPage<BasicConfig>;
 
-const CONFIG_VERSION: u32 = 1;
+const CONFIG_VERSION: u32 = 2;
 
 #[repr(C)]
 pub struct BasicConfig {
