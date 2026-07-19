@@ -19,6 +19,7 @@ pub struct CpuConfigDetails {
     pub num_cpus: u32,
     pub kernel_ap_entry: u64, // or a function pointer?  fn(u32) -> ! 
     pub ap_ready: AtomicBool,
+    pub ap_started: AtomicBool,
 }
 
 impl ConfigConstructor for CpuConfigDetails {}
