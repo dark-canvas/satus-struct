@@ -24,6 +24,7 @@ pub struct CpuConfigDetails {
     pub ap_started: AtomicBool, // not really needed anymore, as active_cpus is used (?)
     pub per_cpu_config: Address,
     pub rsdp_address: Address, // the root system description pointer 
+    pub tranpoline_address: Address,
 }
 
 pub struct PerCpuConfig {
