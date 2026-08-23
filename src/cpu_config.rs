@@ -18,18 +18,8 @@ pub type CpuConfig = ConfigPage<CpuConfigDetails>;
 #[repr(C)]
 pub struct CpuConfigDetails {
     pub num_cpus: u32,
-    pub active_cpus: AtomicU32,
-    pub kernel_ap_entry: u64, // or a function pointer?  fn(u32) -> ! 
-    pub ap_ready: AtomicBool,
-    pub ap_started: AtomicBool, // not really needed anymore, as active_cpus is used (?)
-    pub per_cpu_config: Address,
     pub rsdp_address: Address, // the root system description pointer 
     pub trampoline_address: Address,
-}
-
-pub struct PerCpuConfig {
-    pub stack_guard: u64,
-    pub stack: [u8; 4096], // is this enough?
 }
 
 impl ConfigConstructor for CpuConfigDetails {}
